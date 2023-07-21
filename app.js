@@ -1,9 +1,10 @@
 
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
 function createList(item) {
+  let suits = ['H', 'C', 'D', 'S'];
   for (let j = 0; j < 10; j++) {
     if (item.length < 9) {
-      item.push(j + 2)
+      item.push(`${suits[j]}${j + 2}`)
     } else {
       item.push('J', 'Q', 'K', 'A');
       break;
@@ -34,7 +35,6 @@ function faceCardPointConvert(item) {
   return value;
 }
 
-// This card call will keep track of all the cards and within each suit
 class Cards {
   constructor() {
     this.cardTypes = {
@@ -46,187 +46,171 @@ class Cards {
   }
   // this createCards method when called will push to each card type array and add the associated cards and there suits to each array through a loop
   createCards() {
-    for (let i = 0; i < 4; i++) {
-      if (this.cardTypes.hearts.length != 13) {
-        createList(this.cardTypes.hearts)
-      } else if (this.cardTypes.clubs.length != 13) {
-        createList(this.cardTypes.clubs)
-      } else if (this.cardTypes.spades.length != 13) {
-        createList(this.cardTypes.spades)
-      } else if (this.cardTypes.diamonds.length != 13) {
-        createList(this.cardTypes.diamonds)
+    let cardsPerSuit = 13;
+    let faceCard = ['J', 'Q', 'K', 'A'];
+    for (let key of Object.keys(this.cardTypes)) {
+      for(let i=0; i < cardsPerSuit; i++) {
+        if(i !== 9) {
+          this.cardTypes[key]={
+            value: i + 2,
+            cardType: i + 2,
+            suit: `${key}`
+          }
+        } else {
+            this.cardTypes[key] = {
+              value: i + 2,
+              cardType: faceCard[i - faceCard.length],
+              suit: `${key}`
+            }
+        }
       }
     }
-    return this.cardTypes;
+    return this.cardTypes
   }
 }
 
-// The player class will add players to the game and keep track of thhere hand through an array and points to be started at zero.
-class Players {
-  constructor(name) {
-    this.name = name;
-    this.hand = [];
-    this.points = 0;
-  }
+    // The player class will add players to the game and keep track of thhere hand through an array and points to be started at zero.
+    class Players {
+      constructor(name) {
+        this.name = name;
+        this.hand = [];
+        this.points = 0;
+      }
 
-  describe() {
-    return `${this.name} has ${this.hand.length} in their hand. Here are there cards
+      describe() {
+        return `${this.name} has ${this.hand.length} in their hand. Here are there cards
     ${this.hand}
     `
-  }
-}
-
-class Deck {
-  constructor() {
-    this.cardsInDeck = [];
-  }
-
-  // the addCards methods will create a new cards varialbe using the new Cards class. Then will call the createCards method to the cards variable and push the newly created cards to the this.deck property and return the property
-  addCards() {
-    let cards = new Cards();
-    cards.createCards();
-    this.cardsInDeck = [...cards.cardTypes.hearts, ...cards.cardTypes.clubs, ...cards.cardTypes.diamonds, ...cards.cardTypes.spades];
-    return this.cardsInDeck;
-  }
-}
-
-class Game {
-  constructor() {
-    this.players = [];
-  }
-
-  // the start method will initalize the mainMenu mehtod at the time the browser starts. It will then display the mainMenu prompt and allow the user to start the game or exit. If the user decides to exit an alert will display.
-  start() {
-    let select = this.mainMenu();
-    if (parseFloat(select) === 1) {
-      return this.startGame()
-    } else {
-      alert('Thank you for playing!')
+      }
     }
-  }
 
-  // the mainMenu method will return a prompt to be display if the user would like to see the outcome of the game or exit.
-  mainMenu() {
-    return prompt(`
+    class Deck {
+      constructor() {
+        this.cardsInDeck = [];
+      }
+
+      // the addCards methods will create a new cards varialbe using the new Cards class. Then will call the createCards method to the cards variable and push the newly created cards to the this.deck property and return the property
+      addCards() {
+        let cards = new Cards();
+        cards.createCards();
+        this.cardsInDeck = [...cards.cardTypes.hearts, ...cards.cardTypes.clubs, ...cards.cardTypes.diamonds, ...cards.cardTypes.spades];
+        return this.cardsInDeck;
+      }
+    }
+
+    class Game {
+      constructor() {
+        this.players = [];
+      }
+
+      // the start method will initalize the mainMenu mehtod at the time the browser starts. It will then display the mainMenu prompt and allow the user to start the game or exit. If the user decides to exit an alert will display.
+      start() {
+        let select = this.mainMenu();
+        if (parseFloat(select) === 1) {
+          return this.startGame()
+        } else {
+          alert('Thank you for playing!')
+        }
+      }
+
+      // the mainMenu method will return a prompt to be display if the user would like to see the outcome of the game or exit.
+      mainMenu() {
+        return prompt(`
     It's time to play WAR!
     Please select an option
     0) Exit
     1) Who wins Player 1 or Player 2
     `)
-  }
+      }
 
-  startGame() {
-    // this.players.push(new Players('Player One'));
-    // this.players.push(new Players('Player Two'));
-    this.addPlayers();
-    console.log(this.shuffleDeckAndDeal());
-    // this.shuffleDeckAndDeal();
-    // this.gameBoard();
-    // this.replayGame();
-    // this.addPlayers();
-    // console.log(this.players);
-  }
+      startGame() {
+        this.addPlayers();
+        console.log(this.shuffleDeckAndDeal());
+        // this.shuffleDeckAndDeal();
+        // this.gameBoard();
+        // this.replayGame();
+        // this.addPlayers();
+        // console.log(this.players);
+      }
 
-  addPlayers() {
-    let select = prompt('What is your players name?')
-    this.players.push(new Players(select));
-    for(let i=0; i<3; i++) {
-      this.players.push(new Players(`Player ${i+1}`));
-    }
-    return this.players;
+      addPlayers() {
+        let select = prompt('How many players would you like? \n 1) Two Players (You vs CPU) \n 2) Three Players (You vs 2 CPU)\n 3) Four Players (You vs 3 CPU)');
+        let name = prompt('Please enter your players name?')
+        this.players.push(new Players(name));
+        for (let i = 0; i < parseFloat(select); i++) {
+          this.players.push(new Players(`CPU ${i + 1}`));
+        }
+        return this.players;
 
-  }
+      }
 
-  // the shuffleDeck method will create a new Deck using the new Deck() class and then using a for loop randomly push a card to player[0](or Player One)'s hand. The remaining cards will then be pushed to player 2's hand array. 
-  shuffleDeckAndDeal() {
-    let deck = new Deck();
-    deck.addCards();
-    let handLength = deck.cardsInDeck.length / this.players.length;
-    for(let j=0; j<this.players.length; j++) {
-      for(let i =0; i<deck.cardsInDeck.length / this.players.length;i++) {
-        // let randomNumber = Math.floor(Math.random() * deck.cardsInDeck.length);
-        // let randomCard = deck.cardsInDeck[randomNumber];
-        // this.players[j].hand.push(randomCard);
-        // deck.cardsInDeck.splice(randomNumber, 1);
-        // if(this.players[j].hand.length === 13) {
-        //   break;
-        // }
-        if(this.players[j].hand.length !== handLength) {
-          this.players[j].hand.push(deck.cardsInDeck[i]);
-          deck.cardsInDeck.splice(i + 1, 1);
+      // the shuffleDeck method will create a new Deck using the new Deck() class and then using a for loop randomly push a card to player[0](or Player One)'s hand. The remaining cards will then be pushed to player 2's hand array. 
+      shuffleDeckAndDeal() {
+        let deck = new Deck();
+        deck.addCards();
+        for (let j = 0; j < this.players.length; j++) {
+          let handLength = deck.cardsInDeck.length / (this.players.length - j);
+          for (let i = 0; i < handLength; i++) {
+            let randomNumber = Math.floor(Math.random() * deck.cardsInDeck.length);
+            let randomCard = deck.cardsInDeck[randomNumber];
+            this.players[j].hand.push(randomCard);
+          }
+          deck.cardsInDeck.splice(1, handLength);
+        }
+
+        return this.players;
+      }
+
+      //the gameBoard method will call both players in the this.players array and then compare each item within their arrays. The array will first compare if each item is a string or a number. If a string compares to a number that player adds a point. If both players have string or 'face card' than the faceCardPointConvert will change that player string item to a point and then compare and the winner with the higher number will have a point added to their points.
+      gameBoard() {
+        let player = this.players
+        for (let i = 0; i < player[0].hand.length; i++) {
+          if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'string') {
+            let playerOneHandValue = faceCardPointConvert(player[0].hand[i]);
+            let playerTwoHandValue = faceCardPointConvert(player[1].hand[i]);
+            if (playerOneHandValue < playerTwoHandValue) {
+              player[0].points += 1;
+            } else {
+              player[1].points += 1;
+            }
+          } else if (typeof player[0].hand[i] === 'string' && typeof player[1].hand[i] === 'number') {
+            player[0].points += 1;
+          } else if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'number') {
+            player[1].points += 1;
+          } else if (player[0].hand[i] > player[1].hand[i]) {
+            player[0].points += 1;
+          } else if (player[0].hand[i] < player[1].hand[i]) {
+            player[1].points += 1;
+          }
         }
       }
-      // this.players[j].hand.push(deck.cardsInDeck[j], deck.cardsInDeck[handLength]);
-      // deck.cardsInDeck.splice(j + 1, handLength);
-      // console.log(deck.cardsInDeck.length / this.players.length)
-    }
 
-    // for (let i = 0; i < deck.cardsInDeck.length; i++) {
-    //   let randomNumber = Math.floor(Math.random() * deck.cardsInDeck.length);
-    //   let randomCard = deck.cardsInDeck[randomNumber];
-      
-    //   // console.log(this.players[i].hand);
-    //   // his.players[i].hand.push(randomCard);
-
-    //   // deck.cardsInDeck.splice(randomNumber, 1);
-    //   if (this.players[i].hand.length === 13) {
-    //     break;
-    //   }
-    // }
-    return this.players;
-    // this.players[1].hand.push(...deck.cardsInDeck)
-  }
-
-  //the gameBoard method will call both players in the this.players array and then compare each item within their arrays. The array will first compare if each item is a string or a number. If a string compares to a number that player adds a point. If both players have string or 'face card' than the faceCardPointConvert will change that player string item to a point and then compare and the winner with the higher number will have a point added to their points.
-  gameBoard() {
-    let player = this.players
-    for (let i = 0; i < player[0].hand.length; i++) {
-      if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'string') {
-        let playerOneHandValue = faceCardPointConvert(player[0].hand[i]);
-        let playerTwoHandValue = faceCardPointConvert(player[1].hand[i]);
-        if (playerOneHandValue < playerTwoHandValue) {
-          player[0].points += 1;
+      // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
+      replayGame() {
+        if (this.players[0].points > this.players[1].points) {
+          alert(
+            `${this.players[0].name} wins with ${this.players[0].points} points!`);
+          this.players = [];
+          this.start();
+        } else if (this.players[0].points < this.players[1].points) {
+          alert(
+            `${this.players[1].name} wins with ${this.players[1].points} points!`);
+          this.players = [];
+          this.start();
         } else {
-          player[1].points += 1;
+          alert(
+            `It is a Tie! Both players had ${this.players[0].points} points!`);
+          this.players = [];
+          this.start();
         }
-      } else if (typeof player[0].hand[i] === 'string' && typeof player[1].hand[i] === 'number') {
-        player[0].points += 1;
-      } else if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'number') {
-        player[1].points += 1;
-      } else if (player[0].hand[i] > player[1].hand[i]) {
-        player[0].points += 1;
-      } else if (player[0].hand[i] < player[1].hand[i]) {
-        player[1].points += 1;
       }
+
+
     }
-  }
-
-  // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
-  replayGame() {
-    if (this.players[0].points > this.players[1].points) {
-      alert(
-        `${this.players[0].name} wins with ${this.players[0].points} points!`);
-      this.players = [];
-      this.start();
-    } else if (this.players[0].points < this.players[1].points) {
-      alert(
-        `${this.players[1].name} wins with ${this.players[1].points} points!`);
-      this.players = [];
-      this.start();
-    } else {
-      alert(
-        `It is a Tie! Both players had ${this.players[0].points} points!`);
-      this.players = [];
-      this.start();
-    }
-  }
-
-
-}
 
 
 
-//this variable creates the menu class
-let game = new Game();
-//After calling the start method this will initalize the main menu prompt
-game.start()
+// //this variable creates the menu class
+// let game = new Game();
+// //After calling the start method this will initalize the main menu prompt
+// game.start()
