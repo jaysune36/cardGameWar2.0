@@ -46,23 +46,14 @@ class Cards {
   }
   // this createCards method when called will push to each card type array and add the associated cards and there suits to each array through a loop
   createCards() {
-    let cardsPerSuit = 13;
-    let faceCard = ['J', 'Q', 'K', 'A'];
+    let cardType = [2,3,4,5,6,7,8,9,10,'J','Q','K','A']
     for (let key of Object.keys(this.cardTypes)) {
-      for(let i=0; i < cardsPerSuit; i++) {
-        if(i !== 9) {
-          this.cardTypes[key]={
-            value: i + 2,
-            cardType: i + 2,
-            suit: `${key}`
-          }
-        } else {
-            this.cardTypes[key] = {
+      for(let i=0; i < cardType.length; i++) {
+        this.cardTypes[key].push({
               value: i + 2,
-              cardType: faceCard[i - faceCard.length],
+              cardType: cardType[i],
               suit: `${key}`
-            }
-        }
+            })
       }
     }
     return this.cardTypes
@@ -210,7 +201,7 @@ class Cards {
 
 
 
-// //this variable creates the menu class
-// let game = new Game();
-// //After calling the start method this will initalize the main menu prompt
-// game.start()
+//this variable creates the menu class
+let game = new Game();
+//After calling the start method this will initalize the main menu prompt
+game.start()
