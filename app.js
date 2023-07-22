@@ -1,4 +1,7 @@
 
+
+const startButton = document.querySelector('.start-button');
+const gameOption = document.querySelector('.game-option');
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
 function createList(item) {
   let suits = ['H', 'C', 'D', 'S'];
@@ -110,7 +113,7 @@ class Cards {
     It's time to play WAR!
     Please select an option
     0) Exit
-    1) Who wins Player 1 or Player 2
+    1) Let's Play
     `)
       }
 
@@ -124,8 +127,9 @@ class Cards {
         // console.log(this.players);
       }
 
-      addPlayers() {
-        let select = prompt('How many players would you like? \n 1) Two Players (You vs CPU) \n 2) Three Players (You vs 2 CPU)\n 3) Four Players (You vs 3 CPU)');
+      addPlayers(num) {
+        let select = num;
+        // let select = prompt('How many players would you like? \n 1) Two Players (You vs CPU) \n 2) Three Players (You vs 2 CPU)\n 3) Four Players (You vs 3 CPU)');
         let name = prompt('Please enter your players name?')
         this.players.push(new Players(name));
         for (let i = 0; i < parseFloat(select); i++) {
@@ -199,9 +203,25 @@ class Cards {
 
     }
 
+    startButton.addEventListener('click', (e)=> {
+      if(e.target.className === 'game-start' && e.target.parentElement.className === 'start-button') {
+        let gameStart = startButton.querySelector('.game-start')
+        gameStart.style.visibility = 'hidden';
+        gameOption.querySelector('.game-select').style.visibility = 'visible';
+      }
+    })
+
+    gameOption.addEventListener('click', (e)=> {
+      if(e.target.tagName === 'LI' && e.target.parentElement.parentElement.className === 'game-option') {
+        let game = new Game();
+        game.addPlayers(e.target.className);
+        console.log(game.players)
+      }
+    })
+
 
 
 //this variable creates the menu class
-let game = new Game();
-//After calling the start method this will initalize the main menu prompt
-game.start()
+// let game = new Game();
+// //After calling the start method this will initalize the main menu prompt
+// let game = new Game();

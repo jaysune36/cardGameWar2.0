@@ -350,11 +350,85 @@ template {
   box-sizing: border-box;
 }
 
+body {
+  font-family: "Cormorant Garamond", serif;
+  background-color: #073F69;
+}
+
+ul {
+  list-style: none;
+}
+
 /*=====================================
         UTILITIES PARTIALS
 ======================================*/
 /*=====================================
         COMPONENT PARTIALS
+======================================*/
+/*=====================================
+        Images
+======================================*/
+.diamond path,
+.heart path {
+  fill: #A30000;
+}
+
+svg {
+  width: 100%;
+  height: 5em;
+}
+
+/*=====================================
+        LAYOUT
+======================================*/
+.main-container {
+  width: 90%;
+  margin: 0 auto;
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  text-align: center;
+}
+
+.game-select {
+  visibility: hidden;
+  width: 70%;
+  margin: 0 auto;
+  font-size: 1.5em;
+  position: relative;
+  bottom: 10%;
+}
+.game-select li {
+  border-radius: 5px;
+  margin: 1em 0;
+  background-color: #386587;
+}
+.game-select li:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.start-button {
+  position: absolute;
+  bottom: 15%;
+}
+.start-button button {
+  visibility: visible;
+  width: 10em;
+  font-size: 2em;
+  background-color: #386587;
+  border-style: none;
+  border-radius: 5px;
+  position: relative;
+  left: 20%;
+}
+.start-button .game-start:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+/*=====================================
+        FLEXBOX
 ======================================*/
 
 /*# sourceMappingURL=styles.css.map */
