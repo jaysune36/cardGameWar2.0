@@ -2,6 +2,10 @@
 
 const startButton = document.querySelector('.start-button');
 const gameOption = document.querySelector('.game-option');
+const userLogin = document.querySelector('.login');
+const userLoginValue = userLogin.querySelector('input');
+const submitUser = document.querySelector('.submit');
+let cpuPlayers = 0;
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
 function createList(item) {
   let suits = ['H', 'C', 'D', 'S'];
@@ -127,12 +131,12 @@ class Cards {
         // console.log(this.players);
       }
 
-      addPlayers(num) {
-        let select = num;
+      addPlayers(name, num) {
+        // let select = num;
         // let select = prompt('How many players would you like? \n 1) Two Players (You vs CPU) \n 2) Three Players (You vs 2 CPU)\n 3) Four Players (You vs 3 CPU)');
-        let name = prompt('Please enter your players name?')
+        // let name = prompt('Please enter your players name?')
         this.players.push(new Players(name));
-        for (let i = 0; i < parseFloat(select); i++) {
+        for (let i = 0; i < num; i++) {
           this.players.push(new Players(`CPU ${i + 1}`));
         }
         return this.players;
@@ -206,18 +210,33 @@ class Cards {
     startButton.addEventListener('click', (e)=> {
       if(e.target.className === 'game-start' && e.target.parentElement.className === 'start-button') {
         let gameStart = startButton.querySelector('.game-start')
-        gameStart.style.visibility = 'hidden';
-        gameOption.querySelector('.game-select').style.visibility = 'visible';
+        gameStart.style.display = 'none';
+        gameOption.querySelector('.game-select').style.display = 'flex';
       }
     })
 
     gameOption.addEventListener('click', (e)=> {
+      // console.log(e.target.parentElement.parentElement.className)
+      // let cpuPlayers = '';
+      let userName = '';
       if(e.target.tagName === 'LI' && e.target.parentElement.parentElement.className === 'game-option') {
+        cpuPlayers = e.target.className;
+        console.log(cpuPlayers)
+        gameOption.querySelector('.game-select').style.display = 'none';
+        userLogin.style.display = 'flex';
+      }
+
+      if(e.target.class = 'sumbit' && userLoginValue.value !== '') {
+        userName = userLoginValue.value;
         let game = new Game();
-        game.addPlayers(e.target.className);
-        console.log(game.players)
+        console.log( game.addPlayers(userName, cpuPlayers))
+       
       }
     })
+
+    // userLogin.addEventListener('click', (e) => {
+    //   if
+    // })
 
 
 

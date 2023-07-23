@@ -1,3 +1,34 @@
 /*=====================================
         FLEXBOX
 ======================================*/
+
+
+.main,
+.game-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.two-svg-flex {
+  display: flex;
+  flex-direction: row;
+  &:nth-child(3) .heart {
+    order: 1;
+  }
+  &:nth-child(3) .club {
+    order: 2;
+  }
+}
+
+.game-select,
+.login {
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

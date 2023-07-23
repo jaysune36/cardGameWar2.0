@@ -15,8 +15,9 @@
 
 <body>
   <main class="main-container">
-    <div class="container flex-openScreen">
-      <div class="screen-name">
+    <div class="container flex main">
+      <div class="game-name">
+      <div class="two-svg-flex">
         <div class="spade">
           <svg fill="#000000" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -39,7 +40,9 @@
             </g>
           </svg>
         </div>
-        <h1>WAR!</h1>
+      </div>
+      <h1>WAR!</h1>
+      <div class="two-svg-flex">
         <div class="club">
           <svg c fill="#000000" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -63,12 +66,18 @@
           </svg>
         </div>
       </div>
+      </div>
       <div class="game-option">
         <ul class=" game-select">
           <li class="1">2 Players(You vs CPU)</li>
           <li class="2">3 Players(You vs 2 CPU)</li>
           <li class="3">4 Players(You vs 3 CPU)</li>
         </ul>
+        <div class="login">
+          <label for="name">Please enter your name:</label>
+          <input type="text" name="login" id="name" placeholder="Name">
+          <button class= 'submit' type="submit">Enter!</button>
+        </div>
       </div>
       <div class="start-button">
         <button class="game-start">

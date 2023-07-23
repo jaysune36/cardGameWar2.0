@@ -5,45 +5,76 @@
 .main-container {
   width: 90%;
   @include center;
-  position: absolute;
-  top: 10%;
-  left: 5%;
   text-align: center;
 }
 
+.main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+}
+
+.game-name {
+  margin-bottom: 2.5em;
+}
+
 .game-select {
-  visibility: hidden;
+  display: none;
   width: 70%;
   @include center;
-  font-size: 1.5em;
-  position: relative;
-  bottom: 10%;
+  width: 100%;
+  font-size: 1.25rem;
+  padding-inline-start: 0;
+
   & li {
     border-radius: 5px;
+    padding: .5em;
+    width: 100%;
     margin: 1em 0;
     background-color: #386587;
   }
+
   & li:hover {
     cursor: pointer;
     opacity: .5;
+    color: #A30000;
+    transition: all .3s ease-in;
   }
 }
 
 .start-button {
-  position: absolute;
   bottom: 15%;
+
   & button {
-  visibility: visible;
-  width: 10em;
-  font-size: 2em;
-  background-color: #386587;
-  border-style: none;
-  border-radius: 5px;
-  position: relative;
-  left: 20%;
+    width: 10em;
+    font-size: 2em;
+    background-color: #386587;
+    border-style: none;
+    border-radius: 5px;
   }
+
   & .game-start:hover {
     cursor: pointer;
     opacity: .5;
+    color: #A30000;
+    transition: all .3s ease-in;
+  }
+}
+
+.login {
+  display: none;
+  & label {
+    background-color: #386587;
+    font-size: 1.5em;
+    margin-bottom: 1em;
+  }
+
+  & input {
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    height: 40px;
   }
 }

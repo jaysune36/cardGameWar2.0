@@ -1,0 +1,23 @@
+/*=====================================
+        MEDIA QUERIES
+======================================*/
+
+@media (min-width: 768px) {
+  .game-name {
+    flex-direction: row;
+    & h1 {
+      margin: 0 1em;
+      font-size: 3em;
+    }
+  }  
+  .two-svg-flex {
+    justify-content: space-between;
+
+  &:nth-child(3) .heart {
+    order: 2;
+  }
+  &:nth-child(3) .club {
+    order: 1;
+  }
+  }
+}

@@ -384,51 +384,129 @@ svg {
 .main-container {
   width: 90%;
   margin: 0 auto;
-  position: absolute;
-  top: 10%;
-  left: 5%;
   text-align: center;
 }
 
+.main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+}
+
+.game-name {
+  margin-bottom: 2.5em;
+}
+
 .game-select {
-  visibility: hidden;
+  display: none;
   width: 70%;
   margin: 0 auto;
-  font-size: 1.5em;
-  position: relative;
-  bottom: 10%;
+  width: 100%;
+  font-size: 1.25rem;
+  padding-inline-start: 0;
 }
 .game-select li {
   border-radius: 5px;
+  padding: 0.5em;
+  width: 100%;
   margin: 1em 0;
   background-color: #386587;
 }
 .game-select li:hover {
   cursor: pointer;
   opacity: 0.5;
+  color: #A30000;
+  transition: all 0.3s ease-in;
 }
 
 .start-button {
-  position: absolute;
   bottom: 15%;
 }
 .start-button button {
-  visibility: visible;
   width: 10em;
   font-size: 2em;
   background-color: #386587;
   border-style: none;
   border-radius: 5px;
-  position: relative;
-  left: 20%;
 }
 .start-button .game-start:hover {
   cursor: pointer;
   opacity: 0.5;
+  color: #A30000;
+  transition: all 0.3s ease-in;
+}
+
+.login {
+  display: none;
+}
+.login label {
+  background-color: #386587;
+  font-size: 1.5em;
+  margin-bottom: 1em;
+}
+.login input {
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  height: 40px;
 }
 
 /*=====================================
         FLEXBOX
 ======================================*/
+.main,
+.game-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.two-svg-flex {
+  display: flex;
+  flex-direction: row;
+}
+.two-svg-flex:nth-child(3) .heart {
+  order: 1;
+}
+.two-svg-flex:nth-child(3) .club {
+  order: 2;
+}
+
+.game-select,
+.login {
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/*=====================================
+        MEDIA QUERIES
+======================================*/
+@media (min-width: 768px) {
+  .game-name {
+    flex-direction: row;
+  }
+  .game-name h1 {
+    margin: 0 1em;
+    font-size: 3em;
+  }
+
+  .two-svg-flex {
+    justify-content: space-between;
+  }
+  .two-svg-flex:nth-child(3) .heart {
+    order: 2;
+  }
+  .two-svg-flex:nth-child(3) .club {
+    order: 1;
+  }
+}
 
 /*# sourceMappingURL=styles.css.map */
