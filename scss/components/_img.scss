@@ -2,14 +2,18 @@
         Images
 ======================================*/
 
-.diamond,
-.heart {
-  & path {
-    fill: #A30000;
-  }
-}
+// .diamond,
+// .heart {
+//   & path {
+//     fill: #A30000;
+//   }
+// }
 
 svg {
   width: 100%;
   height: 5em;
+}
+
+#svg-card {
+  height: 0;
 }

@@ -32,3 +32,21 @@
   flex-direction: column;
   align-items: center;
 }
+
+.user{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.game-board {
+  display: none;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.cpu3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
