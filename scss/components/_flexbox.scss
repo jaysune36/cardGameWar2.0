@@ -45,7 +45,20 @@
   justify-content: space-between;
 }
 
-.cpu3 {
+.game-floor {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-floor-mid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.cpu-mid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

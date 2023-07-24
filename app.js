@@ -9,10 +9,6 @@ const submitUser = document.querySelector('.submit');
 const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user')
 let cpuPlayers = 0;
-let div = document.createElement('div');
-let ul = document.createElement('ul');
-let li = document.createElement('li');
-let p = document.createElement('p');
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
 // function createList(item) {
 //   let suits = ['H', 'C', 'D', 'S'];
@@ -165,27 +161,41 @@ class Game {
   }
 
   //the gameBoard method will call both players in the this.players array and then compare each item within their arrays. The array will first compare if each item is a string or a number. If a string compares to a number that player adds a point. If both players have string or 'face card' than the faceCardPointConvert will change that player string item to a point and then compare and the winner with the higher number will have a point added to their points.
-  gameBoard() {
+  gameBoard(index, cardIndex) {
     let player = this.players
-    for (let i = 0; i < player[0].hand.length; i++) {
-      if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'string') {
-        let playerOneHandValue = faceCardPointConvert(player[0].hand[i]);
-        let playerTwoHandValue = faceCardPointConvert(player[1].hand[i]);
-        if (playerOneHandValue < playerTwoHandValue) {
-          player[0].points += 1;
-        } else {
-          player[1].points += 1;
-        }
-      } else if (typeof player[0].hand[i] === 'string' && typeof player[1].hand[i] === 'number') {
-        player[0].points += 1;
-      } else if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'number') {
-        player[1].points += 1;
-      } else if (player[0].hand[i] > player[1].hand[i]) {
-        player[0].points += 1;
-      } else if (player[0].hand[i] < player[1].hand[i]) {
-        player[1].points += 1;
+    let heightestValue = 0;
+    let playerIndex = 0;
+    // for (let i = 0; i < player[0].hand.length; i++) {
+    //   if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'string') {
+    //     let playerOneHandValue = faceCardPointConvert(player[0].hand[i]);
+    //     let playerTwoHandValue = faceCardPointConvert(player[1].hand[i]);
+    //     if (playerOneHandValue < playerTwoHandValue) {
+    //       player[0].points += 1;
+    //     } else {
+    //       player[1].points += 1;
+    //     }
+    //   } else if (typeof player[0].hand[i] === 'string' && typeof player[1].hand[i] === 'number') {
+    //     player[0].points += 1;
+    //   } else if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'number') {
+    //     player[1].points += 1;
+    //   } else if (player[0].hand[i] > player[1].hand[i]) {
+    //     player[0].points += 1;
+    //   } else if (player[0].hand[i] < player[1].hand[i]) {
+    //     player[1].points += 1;
+    //   }
+    // }
+
+    for (let i = 1; i < player.length; i) {
+      if (player[i].hand[0].value > heightestValue) {
+        heightestValue = player[i].hand[0].value;
+        playerIndex = i;
       }
     }
+    if (player[index].hand[cardIndex].value > heightestValue) {
+      heightestValue = player[index].hand[cardIndex].value;
+      playerIndex = index;
+    }
+    console.log(`Player ${player[playerIndex].name} won with a card value of ${heightestValue}`);
   }
 
   // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
@@ -211,6 +221,9 @@ class Game {
 
 }
 
+
+let game = new Game();
+
 startButton.addEventListener('click', (e) => {
   if (e.target.className === 'game-start' && e.target.parentElement.className === 'start-button') {
     let gameStart = startButton.querySelector('.game-start')
@@ -229,108 +242,86 @@ gameOption.addEventListener('click', (e) => {
 
   if (e.target.class = 'sumbit' && userLoginValue.value !== '') {
     userName = userLoginValue.value;
-    let game = new Game();
     game.addPlayers(userName, cpuPlayers);
     game.shuffleDeckAndDeal();
     userLogin.style.display = 'none';
     mainScreen.style.display = 'none';
     gameName.style.display = 'none';
     gameBoard.style.display = 'flex';
-
-    if (game.players.length <= 2) {
-      let innerUl = '';
-      for (let i = 0; i < game.players.length; i++) {
-        if (game.players[i].name === userName) {
-          for (let j = 0; j < game.players[i].hand.length; j++) {
-            innerUl += `
-                  <li class="card ${game.players[0].hand[j].suit}-card">
-                    <p>
+    let innerUl = '';
+    let xtraCPU = '';
+    for (let i = 0; i < game.players.length; i++) {
+      if (game.players[i].name === userName) {
+        for (let j = 0; j < game.players[i].hand.length; j++) {
+          innerUl += `
+                  <li class="card ${game.players[0].hand[j].suit}-card" index='${j}'>
+                    
                       ${game.players[i].hand[j].cardType}
-                    </p>
+                    
                   </li>
               `
-          }
         }
       }
+    }
 
-      gameBoard.innerHTML = `
-          <ul class="user">
+    gameBoard.innerHTML = `
+          <ul class="user" index='0'>
             ${innerUl}
           </ul>
-            <div class="cpu">
-            <p class="cpu-card">${game.players[game.players.length - 1].hand.length}</p>
-          </div>
+          <div class="cpu">
+          <p class="cpu-card" index='1'>${game.players[game.players.length - 1].hand.length}</p>
+        </div>
 
-        `
-    } else {
-      let innerUl = '';
-      let cpuDivOne = '';
-      let cpuDivTwo = '';
-      let cpuDivThree = ''
-      for (let i = 0; i < game.players.length; i++) {
-        if (game.players[i].name === userName) {
-          for (let j = 0; j < game.players[i].hand.length; j++) {
-            innerUl += `
-                  <li class="card ${game.players[0].hand[j].suit}-card">
-                    <p>
-                      ${game.players[i].hand[j].cardType}
-                    </p>
-                  </li>
-              `
-          }
-        }
+          `;
+
+    if (game.players.length > 2) {
+      for (let i = 2; i < game.players.length; i++) {
+        xtraCPU += `<div>
+          <p class="cpu-card" index='${i}'>${game.players[i].hand.length}</p>
+          </div>`
       }
-      for (let i = 0; i < game.players.length; i++) {
-        if (game.players[i].name.includes('CPU')) {
-
-          switch (i) {
-            case '1':
-              cpuDivOne += `
-              <div class="cpu ${game.players[i].name}">
-              <p class="cpu-card">${game.players[i].hand.length}</p>
-              </div>
-              `;
-              break;
-            case '2':
-              cpuDivTwo += `
-              <div class="cpu ${game.players[i].name}">
-              <p class="cpu-card">${game.players[i].hand.length}</p>
-              </div>
-              `;
-              break;
-            case '3':
-              cpuDivThree += `
-              <div class="cpu ${game.players[i].name}">
-              <p class="cpu-card">${game.players[i].hand.length}</p>
-              </div>
-              `;
-          }
-        }
-      }
-
-
-
-      gameBoard.innerHTML = `
-      <ul class="user">
-        ${innerUl}
-      </ul>
-      <div class="cpu3">
-      ${cpuDivOne}
-
-      ${cpuDivTwo}
-    </div>
-
-    <div class="cpu">
-      ${cpuDivThree}
-    </div>
-    `;
+      let midDiv = document.createElement('div');
+      document.querySelector('.user').insertAdjacentElement('afterend', midDiv);
+      midDiv.innerHTML = xtraCPU;
+      midDiv.className = 'cpu-mid';
     }
+
+    let gameFloor = document.createElement('div')
+    gameBoard.insertAdjacentElement('afterend', gameFloor);
+    gameFloor.className = 'game-floor';
+
   }
 })
 
-gameBoard.addEventListener('click', () => {
 
+gameBoard.addEventListener('click', (e) => {
+  if (e.target.parentElement.className === 'user') {
+    let userIndex = e.target.parentElement.getAttribute('index');
+    let userCardIndex = e.target.getAttribute('index');
+    let gameFloor = document.querySelector('.game-floor');
+    let xtraCPU = '';
+    gameFloor.innerHTML = `
+      <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
+      <div class='card ${game.players[game.players.length - 1].hand[0].suit}-card'>${game.players[game.players.length - 1].hand[0].cardType}</div>
+    `;
+
+    e.target.style.display = 'none';
+    game.players[userIndex].hand.splice(userCardIndex, 1)
+    if (game.players.length > 2) {
+      for (let i = 2; i < game.players.length; i++) {
+        xtraCPU += `
+    <div class='card ${game.players[i].hand[0].suit}-card'>${game.players[i].hand[0].cardType}</div>
+    `;
+      }
+      let midDiv = document.createElement('div');
+      document.querySelector('.game-floor-user').insertAdjacentElement('afterend', midDiv);
+      midDiv.innerHTML = xtraCPU;
+      midDiv.className = 'cpu-mid game-floor-mid';
+    }
+    game.gameBoard(userIndex, userCardIndex)
+  }
 })
+
 
 
 

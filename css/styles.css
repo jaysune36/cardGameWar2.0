@@ -482,6 +482,20 @@ svg {
   padding: 10px;
 }
 
+.game-floor {
+  border: 5px solid black;
+  width: 40%;
+  height: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+}
+.game-floor .game-floor-mid {
+  width: 100%;
+}
+
 .user {
   margin: 0 auto;
   width: 80%;
@@ -494,19 +508,18 @@ svg {
 .card {
   border: 1px solid black;
   border-radius: 5px;
-  width: 100%;
+  width: 50px;
   min-width: 50px;
   height: 80px;
   padding: 0.5em 0.5em;
   background-color: #F3F6F4;
   background-repeat: no-repeat;
   background-position-y: 40%;
+  color: #F3F6F4;
+  padding-top: 1.5em;
 }
 .card:hover {
   cursor: pointer;
-}
-.card p {
-  color: #F3F6F4;
 }
 
 .hearts-card {
@@ -588,7 +601,20 @@ svg {
   justify-content: space-between;
 }
 
-.cpu3 {
+.game-floor {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-floor-mid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.cpu-mid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
