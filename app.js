@@ -7,7 +7,7 @@ const userLogin = document.querySelector('.login');
 const userLoginValue = userLogin.querySelector('input');
 const submitUser = document.querySelector('.submit');
 const gameBoard = document.querySelector('.game-board');
-const userHand = document.querySelector('.user')
+const userHand = document.querySelector('.user');
 let cpuPlayers = 0;
 let cpuHand = 0;
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
@@ -57,7 +57,7 @@ class Cards {
   }
   // this createCards method when called will push to each card type array and add the associated cards and there suits to each array through a loop
   createCards() {
-    let cardType = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
+    let cardType = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
     for (let key of Object.keys(this.cardTypes)) {
       for (let i = 0; i < cardType.length; i++) {
         this.cardTypes[key].push({
@@ -88,6 +88,12 @@ class Players {
   addCardsWon(item) {
     this.cardsWon.push(item);
   }
+
+  cardsWonToHand() {
+    for (let i = 0; i < this.cardsWon.length; i++) {
+      this.hand.push(this.cardsWon[i])
+    }
+  }
 }
 
 class Deck {
@@ -108,6 +114,7 @@ class Game {
   constructor() {
     this.players = [];
     this.tiedPlayers = [];
+    this.gameFloorCards = [];
     this.userTied = false;
   }
 
@@ -170,54 +177,75 @@ class Game {
   //the gameBoard method will call both players in the this.players array and then compare each item within their arrays. The array will first compare if each item is a string or a number. If a string compares to a number that player adds a point. If both players have string or 'face card' than the faceCardPointConvert will change that player string item to a point and then compare and the winner with the higher number will have a point added to their points.
   gameBoard(index, cardIndex) {
     let player = this.players
-    let heightestValue = player[index].hand[cardIndex].value;
-    let playerIndex = index;
-    let gameFloorCards = [player[index].hand[cardIndex]];
-    let tieBreakerActive = false;
+    let heightestValue = 0;
+    let playerIndex = 0;
+    this.gameFloorCards.push(player[index].hand[cardIndex]);
+
+
     for (let i = 1; i < player.length; i++) {
-      gameFloorCards.push(player[i].hand[0]);
+      this.gameFloorCards.push(player[i].hand[0]);
       if (player[i].hand[0].value > heightestValue) {
         heightestValue = player[i].hand[0].value;
         playerIndex = i;
+        if (this.tiedPlayers.length === 0) {
+          this.tiedPlayers.push(player[i]);
+        } else {
+          this.tiedPlayers.splice(i - 1, 1);
+        }
+      } else if (player[i].hand[0].value === heightestValue) {
+        this.tiedPlayers.push(player[i]);
       }
+
     }
-    for(let j=0;j<gameFloorCards.length;j++) {
-    player[playerIndex].addCardsWon(gameFloorCards[j]);
+
+    if (player[index].hand[cardIndex].value > heightestValue) {
+      heightestValue = player[index].hand[cardIndex].value;
+      playerIndex = index;
+      this.tiedPlayers = [];
+    } else if (player[index].hand[cardIndex].value === heightestValue) {
+      this.tiedPlayers.push(player[index])
     }
-    console.log(player)
+
+
+    if (this.tiedPlayers.length >= 2) {
+      this.tieBreaker(index, cardIndex);
+      console.log(`There are players that tied`);
+    } else {
+      for (let j = 0; j < this.gameFloorCards.length; j++) {
+        player[playerIndex].addCardsWon(this.gameFloorCards[j]);
+      }
+      this.tiedPlayers = [];
+      this.gameFloorCards = [];
+    }
+
   }
 
-  tieBreaker(index, cardIndex){
-    let tiedPlayers = this.tiedPlayers;
-    tiedPlayers.push(this.players[0]);
-    tiedPlayers.push(this.players[1])
-    let gameFloorPool = [];
-    let playerIndex = 0;
+  tieBreaker(index, cardIndex) {
     let heightestValue = 0;
-    if(this.userTied === true) {
+    if (this.userTied === true) {
       let userTieCard = this.players[index].hand[cardIndex];
       gameFloorPool.push(userTieCard);
       gameFloorPool.push(tiedPlayers[1].hand[0])
-      if(userTieCard.value < tiedPlayers[1].hand[0].value) {
+      if (userTieCard.value < tiedPlayers[1].hand[0].value) {
         playerIndex = 1;
       }
     } else {
-      for(let i=0; i<tiedPlayers.length;i++) {
-        if(tiedPlayers[i].hand[0].value > heightestValue) {
+      for (let i = 0; i < tiedPlayers.length; i++) {
+        if (tiedPlayers[i].hand[0].value > heightestValue) {
           playerIndex = i;
         }
       }
     }
 
-    for(let i=0; i<tiedPlayers.length;i++) {
-      for(let j=0; j < 3; j++) {
+    for (let i = 0; i < tiedPlayers.length; i++) {
+      for (let j = 0; j < 3; j++) {
         gameFloorPool.push(tiedPlayers[playerIndex].hand[j]);
-        tiedPlayers[i].hand.splice(1,1);
+        tiedPlayers[i].hand.splice(1, 1);
       }
     }
-    for(let l=0;l<gameFloorPool.length;l++) {
+    for (let l = 0; l < gameFloorPool.length; l++) {
       this.players[playerIndex].addCardsWon(gameFloorPool[l]);
-      }
+    }
     console.log(this.players)
   }
 
@@ -322,13 +350,18 @@ gameBoard.addEventListener('click', (e) => {
     let userIndex = e.target.parentElement.getAttribute('index');
     let userCardIndex = e.target.getAttribute('index');
     let gameFloor = document.querySelector('.game-floor');
+    let indexLI = document.querySelector('.user').getElementsByTagName(`li`);
     let xtraCPU = '';
     gameFloor.innerHTML = `
       <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
       <div class='card ${game.players[game.players.length - 1].hand[0].suit}-card'>${game.players[game.players.length - 1].hand[0].cardType}</div>
     `;
+    
+    
+    for (let j = parseFloat(e.target.getAttribute('index')) + 1; j < indexLI.length; j++) {
+      indexLI[j].setAttribute('index', j - 1)
+    }
 
-    e.target.style.display = 'none';
     if (game.players.length > 2) {
       for (let i = 2; i < game.players.length; i++) {
         xtraCPU += `
@@ -341,17 +374,18 @@ gameBoard.addEventListener('click', (e) => {
       midDiv.className = 'cpu-mid game-floor-mid';
     }
     game.gameBoard(userIndex, userCardIndex);
-    setTimeout(()=> {
+    setTimeout(() => {
       gameFloor.innerHTML = '';
       game.players[userIndex].hand.splice(userCardIndex, 1);
-      e.target.remove()
-      for(let i=1;i<game.players.length;i++) {
-        game.players[i].hand.splice(0,1);
-        // game.tieBreaker(0,12)
+      for (let i = 1; i < game.players.length; i++) {
+        game.players[i].hand.splice(0, 1);
       }
-    }, 2000)
+      e.target.remove();
+    }, 2000);
   }
-})
+
+});
+
 
 
 
