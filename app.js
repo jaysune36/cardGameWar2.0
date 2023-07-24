@@ -9,6 +9,7 @@ const submitUser = document.querySelector('.submit');
 const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user')
 let cpuPlayers = 0;
+let cpuHand = 0;
 // this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
 // function createList(item) {
 //   let suits = ['H', 'C', 'D', 'S'];
@@ -75,13 +76,17 @@ class Players {
   constructor(name) {
     this.name = name;
     this.hand = [];
-    this.points = 0;
+    this.cardsWon = [];
   }
 
   describe() {
     return `${this.name} has ${this.hand.length} in their hand. Here are there cards
     ${this.hand}
     `
+  }
+
+  addCardsWon(item) {
+    this.cardsWon.push(item);
   }
 }
 
@@ -102,6 +107,8 @@ class Deck {
 class Game {
   constructor() {
     this.players = [];
+    this.tiedPlayers = [];
+    this.userTied = false;
   }
 
   // the start method will initalize the mainMenu mehtod at the time the browser starts. It will then display the mainMenu prompt and allow the user to start the game or exit. If the user decides to exit an alert will display.
@@ -163,39 +170,55 @@ class Game {
   //the gameBoard method will call both players in the this.players array and then compare each item within their arrays. The array will first compare if each item is a string or a number. If a string compares to a number that player adds a point. If both players have string or 'face card' than the faceCardPointConvert will change that player string item to a point and then compare and the winner with the higher number will have a point added to their points.
   gameBoard(index, cardIndex) {
     let player = this.players
-    let heightestValue = 0;
-    let playerIndex = 0;
-    // for (let i = 0; i < player[0].hand.length; i++) {
-    //   if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'string') {
-    //     let playerOneHandValue = faceCardPointConvert(player[0].hand[i]);
-    //     let playerTwoHandValue = faceCardPointConvert(player[1].hand[i]);
-    //     if (playerOneHandValue < playerTwoHandValue) {
-    //       player[0].points += 1;
-    //     } else {
-    //       player[1].points += 1;
-    //     }
-    //   } else if (typeof player[0].hand[i] === 'string' && typeof player[1].hand[i] === 'number') {
-    //     player[0].points += 1;
-    //   } else if (typeof player[1].hand[i] === 'string' && typeof player[0].hand[i] === 'number') {
-    //     player[1].points += 1;
-    //   } else if (player[0].hand[i] > player[1].hand[i]) {
-    //     player[0].points += 1;
-    //   } else if (player[0].hand[i] < player[1].hand[i]) {
-    //     player[1].points += 1;
-    //   }
-    // }
-
-    for (let i = 1; i < player.length; i) {
+    let heightestValue = player[index].hand[cardIndex].value;
+    let playerIndex = index;
+    let gameFloorCards = [player[index].hand[cardIndex]];
+    let tieBreakerActive = false;
+    for (let i = 1; i < player.length; i++) {
+      gameFloorCards.push(player[i].hand[0]);
       if (player[i].hand[0].value > heightestValue) {
         heightestValue = player[i].hand[0].value;
         playerIndex = i;
       }
     }
-    if (player[index].hand[cardIndex].value > heightestValue) {
-      heightestValue = player[index].hand[cardIndex].value;
-      playerIndex = index;
+    for(let j=0;j<gameFloorCards.length;j++) {
+    player[playerIndex].addCardsWon(gameFloorCards[j]);
     }
-    console.log(`Player ${player[playerIndex].name} won with a card value of ${heightestValue}`);
+    console.log(player)
+  }
+
+  tieBreaker(index, cardIndex){
+    let tiedPlayers = this.tiedPlayers;
+    tiedPlayers.push(this.players[0]);
+    tiedPlayers.push(this.players[1])
+    let gameFloorPool = [];
+    let playerIndex = 0;
+    let heightestValue = 0;
+    if(this.userTied === true) {
+      let userTieCard = this.players[index].hand[cardIndex];
+      gameFloorPool.push(userTieCard);
+      gameFloorPool.push(tiedPlayers[1].hand[0])
+      if(userTieCard.value < tiedPlayers[1].hand[0].value) {
+        playerIndex = 1;
+      }
+    } else {
+      for(let i=0; i<tiedPlayers.length;i++) {
+        if(tiedPlayers[i].hand[0].value > heightestValue) {
+          playerIndex = i;
+        }
+      }
+    }
+
+    for(let i=0; i<tiedPlayers.length;i++) {
+      for(let j=0; j < 3; j++) {
+        gameFloorPool.push(tiedPlayers[playerIndex].hand[j]);
+        tiedPlayers[i].hand.splice(1,1);
+      }
+    }
+    for(let l=0;l<gameFloorPool.length;l++) {
+      this.players[playerIndex].addCardsWon(gameFloorPool[l]);
+      }
+    console.log(this.players)
   }
 
   // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
@@ -306,7 +329,6 @@ gameBoard.addEventListener('click', (e) => {
     `;
 
     e.target.style.display = 'none';
-    game.players[userIndex].hand.splice(userCardIndex, 1)
     if (game.players.length > 2) {
       for (let i = 2; i < game.players.length; i++) {
         xtraCPU += `
@@ -318,7 +340,16 @@ gameBoard.addEventListener('click', (e) => {
       midDiv.innerHTML = xtraCPU;
       midDiv.className = 'cpu-mid game-floor-mid';
     }
-    game.gameBoard(userIndex, userCardIndex)
+    game.gameBoard(userIndex, userCardIndex);
+    setTimeout(()=> {
+      gameFloor.innerHTML = '';
+      game.players[userIndex].hand.splice(userCardIndex, 1);
+      e.target.remove()
+      for(let i=1;i<game.players.length;i++) {
+        game.players[i].hand.splice(0,1);
+        // game.tieBreaker(0,12)
+      }
+    }, 2000)
   }
 })
 
