@@ -366,8 +366,8 @@ gameOption.addEventListener('click', (e) => {
       }
     }
 
-    gameBoard.innerHTML += 
-          `
+    gameBoard.innerHTML +=
+      `
           <div class="cpu">
           <p class="cpu-card" index='1'>${game.players[game.players.length - 1].hand.length}</p>
         </div>
@@ -402,12 +402,8 @@ gameBoard.addEventListener('click', (e) => {
     let user = document.querySelector('.user');
     gameFloor.innerHTML = `
       <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
-      <div class='card ${game.players[game.players.length - 1].hand[0].suit}-card'>${game.players[game.players.length - 1].hand[0].cardType}</div>
+      <div class='card ${game.players[1].hand[0].suit}-card'>${game.players[1].hand[0].cardType}</div>
     `;
-
-    for (let j = parseFloat(e.target.getAttribute('index')) + 1; j < indexLI.length; j++) {
-      indexLI[j].setAttribute('index', j - 1);
-    }
 
     if (game.players.length > 2) {
       for (let i = 2; i < game.players.length; i++) {
@@ -416,6 +412,11 @@ gameBoard.addEventListener('click', (e) => {
     `;
       }
       createMidCPUDiv('.game-floor-user', 'cpu-mid game-floor-mid', xtraCPU)
+    }
+
+
+    for (let j = parseFloat(e.target.getAttribute('index')) + 1; j < indexLI.length; j++) {
+      indexLI[j].setAttribute('index', j - 1);
     }
 
     addRemoveOverlay(indexLI, 'add');
@@ -436,13 +437,10 @@ gameBoard.addEventListener('click', (e) => {
       }, 1500);
     } else {
       game.gameBoard(userIndex, userCardIndex);
-
       updateCPUHand(user.nextElementSibling);
-
       setTimeout(() => {
         gameFloor.innerHTML = '';
         removeCardUserHand(game.players, userIndex, userCardIndex);
-
         for (let player of game.players) {
           if (player.hand.length === 0) {
             for (let j = 0; j < player.hand.length; j++) {
@@ -453,14 +451,8 @@ gameBoard.addEventListener('click', (e) => {
         e.target.remove();
         addRemoveOverlay(indexLI, 'remove')
 
-      }, 1500);
+      }, 2000);
     }
   }
 
 });
-
-
-//this variable creates the menu class
-// let game = new Game();
-// //After calling the start method this will initalize the main menu prompt
-// let game = new Game();
