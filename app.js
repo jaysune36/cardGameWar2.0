@@ -10,41 +10,6 @@ const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user');
 let cpuPlayers = 0;
 let cpuHand = 0;
-// this createList function accepts 1 argument to be looped through and create the list for the cards to be stored in an array
-// function createList(item) {
-//   let suits = ['H', 'C', 'D', 'S'];
-//   for (let j = 0; j < 10; j++) {
-//     if (item.length < 9) {
-//       item.push(`${suits[j]}${j + 2}`)
-//     } else {
-//       item.push('J', 'Q', 'K', 'A');
-//       break;
-//     }
-//   }
-// }
-
-// the faceCardPointConver will change a players.hand array item to a point to compare within gameBoard method of the game() class
-function faceCardPointConvert(item) {
-  let value = 0;
-  switch (item) {
-    case 'J':
-      value = 11;
-      break;
-    case 'Q':
-      value = 12;
-      break;
-    case 'K':
-      value = 13;
-      break;
-    case 'A':
-      value = 14;
-      break;
-    default:
-      console.log(`Err. An incorrect value has been entered.`)
-      break;
-  }
-  return value;
-}
 
 class Cards {
   constructor() {
@@ -115,6 +80,7 @@ class Game {
     this.players = [];
     this.tiedPlayers = [];
     this.gameFloorCards = [];
+    this.tiedGame = false;
     this.userTied = false;
   }
 
@@ -203,13 +169,13 @@ class Game {
       playerIndex = index;
       this.tiedPlayers = [];
     } else if (player[index].hand[cardIndex].value === heightestValue) {
-      this.tiedPlayers.push(player[index])
+      this.tiedPlayers.push(player[index]);
+      this.userTied = true;
     }
 
 
     if (this.tiedPlayers.length >= 2) {
-      this.tieBreaker(index, cardIndex);
-      console.log(`There are players that tied`);
+      this.tiedGame = true;
     } else {
       for (let j = 0; j < this.gameFloorCards.length; j++) {
         player[playerIndex].addCardsWon(this.gameFloorCards[j]);
@@ -217,36 +183,68 @@ class Game {
       this.tiedPlayers = [];
       this.gameFloorCards = [];
     }
-
+    console.log(player)
   }
 
-  tieBreaker(index, cardIndex) {
+  tieBreaker(cardIndex) {
     let heightestValue = 0;
-    if (this.userTied === true) {
-      let userTieCard = this.players[index].hand[cardIndex];
-      gameFloorPool.push(userTieCard);
-      gameFloorPool.push(tiedPlayers[1].hand[0])
-      if (userTieCard.value < tiedPlayers[1].hand[0].value) {
-        playerIndex = 1;
-      }
-    } else {
-      for (let i = 0; i < tiedPlayers.length; i++) {
-        if (tiedPlayers[i].hand[0].value > heightestValue) {
-          playerIndex = i;
+
+    if(this.userTied) {
+    for (let i = 0; i < this.tiedPlayers.length; i++) {
+      if (this.tiedPlayers[i].name.includes('CPU')) {
+        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+        this.tiedPlayers[i].hand.splice(0, 1);
+
+          for (let j = 0; j < 3; j++) {
+            this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+            this.tiedPlayers[i].hand.splice(0, 1);
+          }
+
+        if (this.tiedPlayers[i].hand[0].value > heightestValue) {
+          heightestValue = this.tiedPlayers[i].hand[0].value;
+        } 
+
+      } else {
+        this.gameFloorCards.push(this.tiedPlayers[i].hand[cardIndex]);
+        this.tiedPlayers[i].hand.splice(cardIndex, 1);
+
+        for (let j = 0; j < 3; j++) {
+          this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+          this.tiedPlayers[i].hand.splice(0, 1);
         }
+
+        if (this.tiedPlayers[i].hand[cardIndex] > heightestValue) {
+          heightestValue = this.tiedPlayers[i].hand[cardIndex];
+        } 
       }
+    }
+  } else {
+    for (let i = 0; i < this.tiedPlayers.length; i++) {
+        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+        this.tiedPlayers[i].hand.splice(0, 1);
+
+          for (let j = 0; j < 3; j++) {
+            this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+            this.tiedPlayers[i].hand.splice(0, 1);
+          }
+
+        if (this.tiedPlayers[i].hand[0].value > heightestValue) {
+          heightestValue = this.tiedPlayers[i].hand[0].value;
+        }
+    }
+  }
+
+    for (let l = 0; l < this.gameFloorCards.length; l++) {
+      this.tiedPlayers[0].addCardsWon(this.gameFloorCards[l]);
     }
 
-    for (let i = 0; i < tiedPlayers.length; i++) {
-      for (let j = 0; j < 3; j++) {
-        gameFloorPool.push(tiedPlayers[playerIndex].hand[j]);
-        tiedPlayers[i].hand.splice(1, 1);
-      }
+    if (this.tiedPlayers.length < 2) {
+      this.tiedPlayers = [];
+      this.gameFloorCards = [];
+      this.tiedGame = false;
     }
-    for (let l = 0; l < gameFloorPool.length; l++) {
-      this.players[playerIndex].addCardsWon(gameFloorPool[l]);
-    }
-    console.log(this.players)
+
+    console.log(this.players);
   }
 
   // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
@@ -306,7 +304,7 @@ gameOption.addEventListener('click', (e) => {
         for (let j = 0; j < game.players[i].hand.length; j++) {
           innerUl += `
                   <li class="card ${game.players[0].hand[j].suit}-card" index='${j}'>
-                    
+                      <div></div>
                       ${game.players[i].hand[j].cardType}
                     
                   </li>
@@ -346,7 +344,8 @@ gameOption.addEventListener('click', (e) => {
 
 
 gameBoard.addEventListener('click', (e) => {
-  if (e.target.parentElement.className === 'user') {
+
+  if (e.target.parentElement.className === 'user' && e.target.tagName === 'LI') {
     let userIndex = e.target.parentElement.getAttribute('index');
     let userCardIndex = e.target.getAttribute('index');
     let gameFloor = document.querySelector('.game-floor');
@@ -356,10 +355,9 @@ gameBoard.addEventListener('click', (e) => {
       <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
       <div class='card ${game.players[game.players.length - 1].hand[0].suit}-card'>${game.players[game.players.length - 1].hand[0].cardType}</div>
     `;
-    
-    
+
     for (let j = parseFloat(e.target.getAttribute('index')) + 1; j < indexLI.length; j++) {
-      indexLI[j].setAttribute('index', j - 1)
+      indexLI[j].setAttribute('index', j - 1);
     }
 
     if (game.players.length > 2) {
@@ -373,15 +371,92 @@ gameBoard.addEventListener('click', (e) => {
       midDiv.innerHTML = xtraCPU;
       midDiv.className = 'cpu-mid game-floor-mid';
     }
-    game.gameBoard(userIndex, userCardIndex);
-    setTimeout(() => {
-      gameFloor.innerHTML = '';
-      game.players[userIndex].hand.splice(userCardIndex, 1);
-      for (let i = 1; i < game.players.length; i++) {
-        game.players[i].hand.splice(0, 1);
+
+    for (let l = 0; l < indexLI.length; l++) {
+      // let createDiv = document.createElement('div');
+      // indexLI[l].insertAdjacentElement('afterbegin', createDiv);
+      // createDiv.classList.add('overlay');
+      // console.log(indexLI[l].firstElementChild)
+      indexLI[l].firstElementChild.classList.add('overlay')
+    }
+    
+    if (game.tiedGame === true) {
+      console.log('this is a tied game');
+
+      game.tieBreaker(userCardIndex);
+      if(game.players.length > 2) {
+        e.target.parentElement.nextElementSibling.nextElementSibling.firstElementChild.innerText = game.players[i].length - 1;
+        for(let child of e.target.parentElement.nextElementSibling.children) {
+          for(let i = 2; i<e.target.parentElement.nextElementSibling.children.length; i++) {
+          child.firstElementChild.innerText = game.players[i].hand.length--;
+          }
+        }
+      } else {
+        e.target.parentElement.nextElementSibling.firstElementChild.innerText = game.players[1].hand.length - 1; 
       }
-      e.target.remove();
-    }, 2000);
+
+      let createNewHand = document.createElement('ul');
+      createNewHand.classList.add('user');
+      createNewHand.setAttribute('index',0)
+      gameBoard.firstElementChild.remove()
+      gameBoard.insertAdjacentElement('afterbegin', createNewHand);
+      let newHandLI = '';
+      for(let i=0; i<game.players[0].hand.length; i++) {
+        newHandLI += `
+        <li class="card ${game.players[0].hand[i].suit}-card" index='${i}'>
+        <div></div>
+        ${game.players[0].hand[i].cardType}
+        </li>
+        `
+      }
+      createNewHand.innerHTML = newHandLI;
+
+      setTimeout(() => {
+        gameFloor.innerHTML = '';
+        game.players[userIndex].hand.splice(userCardIndex, 1);
+        for (let i = 1; i < game.players.length; i++) {
+          game.players[i].hand.splice(0, 1);
+        }
+        e.target.remove();
+        for (let l = 0; l < indexLI.length; l++) {
+
+          indexLI[l].firstElementChild.classList.remove('overlay');
+        }
+      }, 1500);
+    } else {
+      game.gameBoard(userIndex, userCardIndex);
+
+      if(game.players.length > 2) {
+        e.target.parentElement.nextElementSibling.nextElementSibling.firstElementChild.innerText -=1;
+        for(let child of e.target.parentElement.nextElementSibling.children) {
+          child.firstElementChild.innerText -= 1;
+        }
+      } else {
+        e.target.parentElement.nextElementSibling.firstElementChild.innerText-=1;
+      }
+
+      setTimeout(() => {
+        gameFloor.innerHTML = '';
+        game.players[userIndex].hand.splice(userCardIndex, 1);
+        for (let i = 1; i < game.players.length; i++) {
+          game.players[i].hand.splice(0, 1);
+        }
+        e.target.remove();
+        for (let l = 0; l < indexLI.length; l++) {
+          indexLI[l].firstElementChild.classList.remove('overlay');
+        }
+
+
+        for(let player of game.players) {
+          if(player.hand.length === 0){
+          for(let j=0;j<player.hand.length;j++) {
+            player.addCardsWon();
+          }
+        }
+        }
+
+      }, 1500);
+    }
   }
 
 });
