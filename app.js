@@ -11,6 +11,68 @@ const userHand = document.querySelector('.user');
 let cpuPlayers = 0;
 let cpuHand = 0;
 
+//function accepts 2 arguments. First argument enter the array of elements you would like to add or remove the class from. For argument 2 type 'remove' to remove overlay or 'add' to add overlay
+function addRemoveOverlay(arrEle, str) {
+  let arg = str;
+  if (arg === 'add') {
+    for (let l = 0; l < arrEle.length; l++) {
+      arrEle[l].firstElementChild.classList.add('overlay')
+    }
+  } else {
+    for (let l = 0; l < arrEle.length; l++) {
+      arrEle[l].firstElementChild.classList.remove('overlay')
+    }
+  }
+}
+
+//updateCPUHand function accepts 2 args. 1st arg is the target where the hand will be udpated. 2nd arg is for the new hand length
+function updateCPUHand(target) {
+  if (game.players.length > 2) {
+    target.nextElementSibling.firstElementChild.innerText = game.players[1].hand.length - 1;
+    for (let child of target.children) {
+      console.log(target.children.length)
+      for (let i = 0; i < target.children.length; i++) {
+        child.firstElementChild.innerText = game.players[i].hand.length - 1;
+      }
+    }
+  } else {
+    target.firstElementChild.innerText = game.players[1].hand.length - 1;
+  }
+
+}
+
+function removeCardUserHand(classPlayer, index, cardIndex) {
+  classPlayer[index].hand.splice(cardIndex, 1);
+  for (let i = 1; i < classPlayer.length; i++) {
+    classPlayer[i].hand.splice(0, 1);
+  }
+}
+
+function createMidCPUDiv(section, className, content) {
+  let midDiv = document.createElement('div');
+  document.querySelector(section).insertAdjacentElement('afterend', midDiv);
+  midDiv.innerHTML = content;
+  midDiv.className = className;
+}
+
+function playerHandCreate() {
+  let createNewHand = document.createElement('ul');
+  createNewHand.classList.add('user');
+  createNewHand.setAttribute('index', 0);
+  console.log(createNewHand);
+  gameBoard.insertAdjacentElement('afterbegin', createNewHand);
+  let newHandLI = '';
+  for (let i = 0; i < game.players[0].hand.length; i++) {
+    newHandLI += `
+        <li class="card ${game.players[0].hand[i].suit}-card" index='${i}'>
+        <div></div>
+        ${game.players[0].hand[i].cardType}
+        </li>
+        `
+  }
+  createNewHand.innerHTML = newHandLI;
+}
+
 class Cards {
   constructor() {
     this.cardTypes = {
@@ -189,50 +251,50 @@ class Game {
   tieBreaker(cardIndex) {
     let heightestValue = 0;
 
-    if(this.userTied) {
-    for (let i = 0; i < this.tiedPlayers.length; i++) {
-      if (this.tiedPlayers[i].name.includes('CPU')) {
-        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-        this.tiedPlayers[i].hand.splice(0, 1);
+    if (this.userTied) {
+      for (let i = 0; i < this.tiedPlayers.length; i++) {
+        if (this.tiedPlayers[i].name.includes('CPU')) {
+          this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+          this.tiedPlayers[i].hand.splice(0, 1);
 
           for (let j = 0; j < 3; j++) {
             this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
             this.tiedPlayers[i].hand.splice(0, 1);
           }
 
-        if (this.tiedPlayers[i].hand[0].value > heightestValue) {
-          heightestValue = this.tiedPlayers[i].hand[0].value;
-        } 
+          if (this.tiedPlayers[i].hand[0].value > heightestValue) {
+            heightestValue = this.tiedPlayers[i].hand[0].value;
+          }
 
-      } else {
-        this.gameFloorCards.push(this.tiedPlayers[i].hand[cardIndex]);
-        this.tiedPlayers[i].hand.splice(cardIndex, 1);
+        } else {
+          this.gameFloorCards.push(this.tiedPlayers[i].hand[cardIndex]);
+          this.tiedPlayers[i].hand.splice(cardIndex, 1);
+
+          for (let j = 0; j < 3; j++) {
+            this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+            this.tiedPlayers[i].hand.splice(0, 1);
+          }
+
+          if (this.tiedPlayers[i].hand[cardIndex] > heightestValue) {
+            heightestValue = this.tiedPlayers[i].hand[cardIndex];
+          }
+        }
+      }
+    } else {
+      for (let i = 0; i < this.tiedPlayers.length; i++) {
+        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+        this.tiedPlayers[i].hand.splice(0, 1);
 
         for (let j = 0; j < 3; j++) {
           this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
           this.tiedPlayers[i].hand.splice(0, 1);
         }
 
-        if (this.tiedPlayers[i].hand[cardIndex] > heightestValue) {
-          heightestValue = this.tiedPlayers[i].hand[cardIndex];
-        } 
-      }
-    }
-  } else {
-    for (let i = 0; i < this.tiedPlayers.length; i++) {
-        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-        this.tiedPlayers[i].hand.splice(0, 1);
-
-          for (let j = 0; j < 3; j++) {
-            this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-            this.tiedPlayers[i].hand.splice(0, 1);
-          }
-
         if (this.tiedPlayers[i].hand[0].value > heightestValue) {
           heightestValue = this.tiedPlayers[i].hand[0].value;
         }
+      }
     }
-  }
 
     for (let l = 0; l < this.gameFloorCards.length; l++) {
       this.tiedPlayers[0].addCardsWon(this.gameFloorCards[l]);
@@ -297,26 +359,15 @@ gameOption.addEventListener('click', (e) => {
     mainScreen.style.display = 'none';
     gameName.style.display = 'none';
     gameBoard.style.display = 'flex';
-    let innerUl = '';
     let xtraCPU = '';
     for (let i = 0; i < game.players.length; i++) {
       if (game.players[i].name === userName) {
-        for (let j = 0; j < game.players[i].hand.length; j++) {
-          innerUl += `
-                  <li class="card ${game.players[0].hand[j].suit}-card" index='${j}'>
-                      <div></div>
-                      ${game.players[i].hand[j].cardType}
-                    
-                  </li>
-              `
-        }
+        playerHandCreate()
       }
     }
 
-    gameBoard.innerHTML = `
-          <ul class="user" index='0'>
-            ${innerUl}
-          </ul>
+    gameBoard.innerHTML += 
+          `
           <div class="cpu">
           <p class="cpu-card" index='1'>${game.players[game.players.length - 1].hand.length}</p>
         </div>
@@ -329,10 +380,7 @@ gameOption.addEventListener('click', (e) => {
           <p class="cpu-card" index='${i}'>${game.players[i].hand.length}</p>
           </div>`
       }
-      let midDiv = document.createElement('div');
-      document.querySelector('.user').insertAdjacentElement('afterend', midDiv);
-      midDiv.innerHTML = xtraCPU;
-      midDiv.className = 'cpu-mid';
+      createMidCPUDiv('.user', 'cpu-mid', xtraCPU)
     }
 
     let gameFloor = document.createElement('div')
@@ -351,6 +399,7 @@ gameBoard.addEventListener('click', (e) => {
     let gameFloor = document.querySelector('.game-floor');
     let indexLI = document.querySelector('.user').getElementsByTagName(`li`);
     let xtraCPU = '';
+    let user = document.querySelector('.user');
     gameFloor.innerHTML = `
       <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
       <div class='card ${game.players[game.players.length - 1].hand[0].suit}-card'>${game.players[game.players.length - 1].hand[0].cardType}</div>
@@ -366,106 +415,49 @@ gameBoard.addEventListener('click', (e) => {
     <div class='card ${game.players[i].hand[0].suit}-card'>${game.players[i].hand[0].cardType}</div>
     `;
       }
-      let midDiv = document.createElement('div');
-      document.querySelector('.game-floor-user').insertAdjacentElement('afterend', midDiv);
-      midDiv.innerHTML = xtraCPU;
-      midDiv.className = 'cpu-mid game-floor-mid';
+      createMidCPUDiv('.game-floor-user', 'cpu-mid game-floor-mid', xtraCPU)
     }
 
-    for (let l = 0; l < indexLI.length; l++) {
-      // let createDiv = document.createElement('div');
-      // indexLI[l].insertAdjacentElement('afterbegin', createDiv);
-      // createDiv.classList.add('overlay');
-      // console.log(indexLI[l].firstElementChild)
-      indexLI[l].firstElementChild.classList.add('overlay')
-    }
-    
+    addRemoveOverlay(indexLI, 'add');
+
     if (game.tiedGame === true) {
       console.log('this is a tied game');
 
       game.tieBreaker(userCardIndex);
-      if(game.players.length > 2) {
-        e.target.parentElement.nextElementSibling.nextElementSibling.firstElementChild.innerText = game.players[i].length - 1;
-        for(let child of e.target.parentElement.nextElementSibling.children) {
-          for(let i = 2; i<e.target.parentElement.nextElementSibling.children.length; i++) {
-          child.firstElementChild.innerText = game.players[i].hand.length--;
-          }
-        }
-      } else {
-        e.target.parentElement.nextElementSibling.firstElementChild.innerText = game.players[1].hand.length - 1; 
-      }
-
-      let createNewHand = document.createElement('ul');
-      createNewHand.classList.add('user');
-      createNewHand.setAttribute('index',0)
+      updateCPUHand(user.nextElementSibling);
       gameBoard.firstElementChild.remove()
-      gameBoard.insertAdjacentElement('afterbegin', createNewHand);
-      let newHandLI = '';
-      for(let i=0; i<game.players[0].hand.length; i++) {
-        newHandLI += `
-        <li class="card ${game.players[0].hand[i].suit}-card" index='${i}'>
-        <div></div>
-        ${game.players[0].hand[i].cardType}
-        </li>
-        `
-      }
-      createNewHand.innerHTML = newHandLI;
+      playerHandCreate();
 
       setTimeout(() => {
         gameFloor.innerHTML = '';
-        game.players[userIndex].hand.splice(userCardIndex, 1);
-        for (let i = 1; i < game.players.length; i++) {
-          game.players[i].hand.splice(0, 1);
-        }
+        removeCardUserHand(game.players, userIndex, userCardIndex);
         e.target.remove();
-        for (let l = 0; l < indexLI.length; l++) {
-
-          indexLI[l].firstElementChild.classList.remove('overlay');
-        }
+        addRemoveOverlay(indexLI, 'remove');
       }, 1500);
     } else {
       game.gameBoard(userIndex, userCardIndex);
 
-      if(game.players.length > 2) {
-        e.target.parentElement.nextElementSibling.nextElementSibling.firstElementChild.innerText -=1;
-        for(let child of e.target.parentElement.nextElementSibling.children) {
-          child.firstElementChild.innerText -= 1;
-        }
-      } else {
-        e.target.parentElement.nextElementSibling.firstElementChild.innerText-=1;
-      }
+      updateCPUHand(user.nextElementSibling);
 
       setTimeout(() => {
         gameFloor.innerHTML = '';
-        game.players[userIndex].hand.splice(userCardIndex, 1);
-        for (let i = 1; i < game.players.length; i++) {
-          game.players[i].hand.splice(0, 1);
-        }
-        e.target.remove();
-        for (let l = 0; l < indexLI.length; l++) {
-          indexLI[l].firstElementChild.classList.remove('overlay');
-        }
+        removeCardUserHand(game.players, userIndex, userCardIndex);
 
-
-        for(let player of game.players) {
-          if(player.hand.length === 0){
-          for(let j=0;j<player.hand.length;j++) {
-            player.addCardsWon();
+        for (let player of game.players) {
+          if (player.hand.length === 0) {
+            for (let j = 0; j < player.hand.length; j++) {
+              player.addCardsWon();
+            }
           }
         }
-        }
+        e.target.remove();
+        addRemoveOverlay(indexLI, 'remove')
 
       }, 1500);
     }
   }
 
 });
-
-
-
-
-
-
 
 
 //this variable creates the menu class
