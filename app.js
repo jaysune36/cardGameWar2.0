@@ -8,6 +8,8 @@ const userLoginValue = userLogin.querySelector('input');
 const submitUser = document.querySelector('.submit');
 const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user');
+const gameFloor =  document.querySelector('.game-floor');
+const gameFloorDesgin = document.querySelector('.game-floor-svgs');
 let cpuPlayers = 0;
 let cpuHand = 0;
 
@@ -359,6 +361,8 @@ gameOption.addEventListener('click', (e) => {
     mainScreen.style.display = 'none';
     gameName.style.display = 'none';
     gameBoard.style.display = 'flex';
+    gameFloor.style.display = 'flex'; 
+    gameFloorDesgin.style.display = 'block';  
     let xtraCPU = '';
     for (let i = 0; i < game.players.length; i++) {
       if (game.players[i].name === userName) {
@@ -383,9 +387,9 @@ gameOption.addEventListener('click', (e) => {
       createMidCPUDiv('.user', 'cpu-mid', xtraCPU)
     }
 
-    let gameFloor = document.createElement('div')
-    gameBoard.insertAdjacentElement('afterend', gameFloor);
-    gameFloor.className = 'game-floor';
+    // let gameFloor = document.createElement('div')
+    // gameBoard.insertAdjacentElement('afterend', gameFloor);
+    // gameFloor.className = 'game-floor';
 
   }
 })

@@ -377,6 +377,18 @@ svg {
   height: 0;
 }
 
+.game-floor-svgs {
+  display: none;
+  width: 50%;
+  opacity: 0.6;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  z-index: -5;
+}
+
 /*=====================================
         LAYOUT
 ======================================*/
@@ -483,7 +495,7 @@ svg {
 }
 
 .game-floor {
-  border: 5px solid black;
+  display: none;
   width: 40%;
   height: 50%;
   position: absolute;
@@ -499,7 +511,9 @@ svg {
 .user {
   margin: 0 auto;
   width: 80%;
-  overflow: scroll;
+  height: 15%;
+  overflow-y: hidden;
+  overflow-x: scroll;
 }
 .user ul {
   width: 100%;
@@ -560,13 +574,14 @@ svg {
 .overlay {
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
-  z-index: 2;
+  z-index: 99;
   border-radius: 5px;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: scroll;
+  width: 50px;
+  min-width: 50px;
+  height: 80px;
+  overflow: hidden;
 }
 
 /*=====================================
@@ -587,6 +602,19 @@ svg {
   order: 1;
 }
 .two-svg-flex:nth-child(3) .club {
+  order: 2;
+}
+
+.two-svg-flex-floor {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.two-svg-flex-floor:nth-child(2) .heart {
+  order: 1;
+}
+.two-svg-flex-floor:nth-child(2) .club {
   order: 2;
 }
 
@@ -615,7 +643,6 @@ svg {
 }
 
 .game-floor {
-  display: flex;
   flex-direction: column-reverse;
   justify-content: space-between;
   align-items: center;
@@ -657,6 +684,10 @@ svg {
 
   .user {
     width: 50%;
+  }
+
+  .game-floor-design {
+    width: 20%;
   }
 }
 

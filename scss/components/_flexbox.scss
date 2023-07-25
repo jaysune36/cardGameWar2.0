@@ -21,6 +21,19 @@
   }
 }
 
+.two-svg-flex-floor {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  &:nth-child(2) .heart {
+    order: 1;
+  }
+  &:nth-child(2) .club {
+    order: 2;
+  }
+}
+
 .game-select,
 .login {
   flex-direction: column;
@@ -46,11 +59,15 @@
 }
 
 .game-floor {
-  display: flex;
   flex-direction: column-reverse;
   justify-content: space-between;
   align-items: center;
 }
+
+// .game-floor-design {
+//   display: flex;
+//   align-items: center;
+// }
 
 .game-floor-mid {
   display: flex;
