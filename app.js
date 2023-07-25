@@ -8,7 +8,7 @@ const userLoginValue = userLogin.querySelector('input');
 const submitUser = document.querySelector('.submit');
 const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user');
-const gameFloor =  document.querySelector('.game-floor');
+const gameFloor = document.querySelector('.game-floor');
 const gameFloorDesgin = document.querySelector('.game-floor-svgs');
 let cpuPlayers = 0;
 let cpuHand = 0;
@@ -32,7 +32,6 @@ function updateCPUHand(target) {
   if (game.players.length > 2) {
     target.nextElementSibling.firstElementChild.innerText = game.players[1].hand.length - 1;
     for (let child of target.children) {
-      console.log(target.children.length)
       for (let i = 0; i < target.children.length; i++) {
         child.firstElementChild.innerText = game.players[i].hand.length - 1;
       }
@@ -61,7 +60,6 @@ function playerHandCreate() {
   let createNewHand = document.createElement('ul');
   createNewHand.classList.add('user');
   createNewHand.setAttribute('index', 0);
-  console.log(createNewHand);
   gameBoard.insertAdjacentElement('afterbegin', createNewHand);
   let newHandLI = '';
   for (let i = 0; i < game.players[0].hand.length; i++) {
@@ -72,7 +70,10 @@ function playerHandCreate() {
         </li>
         `
   }
-  createNewHand.innerHTML = newHandLI;
+  createNewHand.innerHTML = `
+  <div class='discard-user cpu-card'><p></p></div>
+  ${newHandLI}
+  `;
 }
 
 class Cards {
@@ -252,8 +253,9 @@ class Game {
 
   tieBreaker(cardIndex) {
     let heightestValue = 0;
+    let player;
 
-    if (this.userTied) {
+    // if (this.userTied) {
       for (let i = 0; i < this.tiedPlayers.length; i++) {
         if (this.tiedPlayers[i].name.includes('CPU')) {
           this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
@@ -266,6 +268,7 @@ class Game {
 
           if (this.tiedPlayers[i].hand[0].value > heightestValue) {
             heightestValue = this.tiedPlayers[i].hand[0].value;
+            player = this.tiedPlayers[i]
           }
 
         } else {
@@ -279,27 +282,34 @@ class Game {
 
           if (this.tiedPlayers[i].hand[cardIndex] > heightestValue) {
             heightestValue = this.tiedPlayers[i].hand[cardIndex];
-          }
+            player = this.tiedPlayers[i]
+          } 
+          // else if(this.tiedPlayers[i].hand[cardIndex] < heightestValue) {
+
+          // }
         }
       }
-    } else {
-      for (let i = 0; i < this.tiedPlayers.length; i++) {
-        this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-        this.tiedPlayers[i].hand.splice(0, 1);
+    // } else {
+    //   for (let i = 0; i < this.tiedPlayers.length; i++) {
+    //     this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+    //     this.tiedPlayers[i].hand.splice(0, 1);
 
-        for (let j = 0; j < 3; j++) {
-          this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-          this.tiedPlayers[i].hand.splice(0, 1);
-        }
+    //     for (let j = 0; j < 3; j++) {
+    //       this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+    //       this.tiedPlayers[i].hand.splice(0, 1);
+    //     }
 
-        if (this.tiedPlayers[i].hand[0].value > heightestValue) {
-          heightestValue = this.tiedPlayers[i].hand[0].value;
-        }
-      }
-    }
+    //     if (this.tiedPlayers[i].hand[0].value > heightestValue) {
+    //       heightestValue = this.tiedPlayers[i].hand[0].value;
+    //     }
+    //   }
+    // }
+
+    console.log(player);
+    console.log(this.tiedPlayers.length)
 
     for (let l = 0; l < this.gameFloorCards.length; l++) {
-      this.tiedPlayers[0].addCardsWon(this.gameFloorCards[l]);
+      player.addCardsWon(this.gameFloorCards[l]);
     }
 
     if (this.tiedPlayers.length < 2) {
@@ -361,8 +371,8 @@ gameOption.addEventListener('click', (e) => {
     mainScreen.style.display = 'none';
     gameName.style.display = 'none';
     gameBoard.style.display = 'flex';
-    gameFloor.style.display = 'flex'; 
-    gameFloorDesgin.style.display = 'block';  
+    gameFloor.style.display = 'flex';
+    gameFloorDesgin.style.display = 'block';
     let xtraCPU = '';
     for (let i = 0; i < game.players.length; i++) {
       if (game.players[i].name === userName) {
@@ -370,27 +380,25 @@ gameOption.addEventListener('click', (e) => {
       }
     }
 
-    gameBoard.innerHTML +=
-      `
+    gameBoard.innerHTML += `
           <div class="cpu">
           <p class="cpu-card" index='1'>${game.players[game.players.length - 1].hand.length}</p>
-        </div>
-
+          <div class='discard cpu-card'><p></p></div>
+          </div>
+          
           `;
 
     if (game.players.length > 2) {
       for (let i = 2; i < game.players.length; i++) {
-        xtraCPU += `<div>
-          <p class="cpu-card" index='${i}'>${game.players[i].hand.length}</p>
-          </div>`
+        xtraCPU += `
+          <div>
+          <p class="cpu-card mid-card" index='${i}'>${game.players[i].hand.length}</p>
+          <div class='discard cpu-card'><p></p></div>
+          </div>
+          `
       }
       createMidCPUDiv('.user', 'cpu-mid', xtraCPU)
     }
-
-    // let gameFloor = document.createElement('div')
-    // gameBoard.insertAdjacentElement('afterend', gameFloor);
-    // gameFloor.className = 'game-floor';
-
   }
 })
 
@@ -432,16 +440,23 @@ gameBoard.addEventListener('click', (e) => {
       updateCPUHand(user.nextElementSibling);
       gameBoard.firstElementChild.remove()
       playerHandCreate();
+      let discardCountUser = game.players[0].cardsWon.length;
+      let cpusDiscard = document.querySelectorAll('.discard');
 
       setTimeout(() => {
         gameFloor.innerHTML = '';
         removeCardUserHand(game.players, userIndex, userCardIndex);
         e.target.remove();
-        addRemoveOverlay(indexLI, 'remove');
+        addRemoveOverlay(indexLI, 'remove'); for (let cpuDiscard of cpusDiscard) {
+          cpuDiscard.innerText = game.players[cpuDiscard.previousElementSibling.getAttribute('index')].cardsWon.length
+        }
+        document.querySelector('.discard-user').innerText = discardCountUser;
       }, 1500);
     } else {
       game.gameBoard(userIndex, userCardIndex);
       updateCPUHand(user.nextElementSibling);
+      let discardCountUser = game.players[0].cardsWon.length;
+      let cpusDiscard = document.querySelectorAll('.discard');
       setTimeout(() => {
         gameFloor.innerHTML = '';
         removeCardUserHand(game.players, userIndex, userCardIndex);
@@ -453,7 +468,11 @@ gameBoard.addEventListener('click', (e) => {
           }
         }
         e.target.remove();
-        addRemoveOverlay(indexLI, 'remove')
+        addRemoveOverlay(indexLI, 'remove');
+        for (let cpuDiscard of cpusDiscard) {
+          cpuDiscard.innerText = game.players[cpuDiscard.previousElementSibling.getAttribute('index')].cardsWon.length
+        }
+        document.querySelector('.discard-user').innerText = discardCountUser;
 
       }, 2000);
     }

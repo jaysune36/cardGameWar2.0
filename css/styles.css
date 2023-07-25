@@ -363,6 +363,9 @@ ul {
         UTILITIES PARTIALS
 ======================================*/
 /*=====================================
+        VARIABLES
+======================================*/
+/*=====================================
         COMPONENT PARTIALS
 ======================================*/
 /*=====================================
@@ -378,14 +381,14 @@ svg {
 }
 
 .game-floor-svgs {
-  display: none;
-  width: 50%;
-  opacity: 0.6;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 10px;
+  display: none;
+  width: 50%;
+  opacity: 0.6;
   z-index: -5;
 }
 
@@ -484,25 +487,25 @@ svg {
 
 .game-board {
   margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
   padding-top: 2em;
   height: 90vh;
   width: 90%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px;
 }
 
 .game-floor {
-  display: none;
-  width: 40%;
-  height: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 10px;
+  display: none;
+  width: 40%;
+  height: 50%;
 }
 .game-floor .game-floor-mid {
   width: 100%;
@@ -510,7 +513,7 @@ svg {
 
 .user {
   margin: 0 auto;
-  width: 80%;
+  width: 70%;
   height: 15%;
   overflow-y: hidden;
   overflow-x: scroll;
@@ -535,6 +538,12 @@ svg {
 }
 .card:hover {
   cursor: pointer;
+}
+
+.discard-user {
+  position: fixed;
+  z-index: 10;
+  left: 85%;
 }
 
 .hearts-card {
@@ -569,6 +578,10 @@ svg {
 }
 .cpu-card:hover {
   cursor: pointer;
+}
+
+.mid-card {
+  margin: 0;
 }
 
 .overlay {
@@ -654,10 +667,24 @@ svg {
   justify-content: space-between;
 }
 
+.cpu {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .cpu-mid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+.cpu-mid .cpu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 50px;
 }
 
 /*=====================================
@@ -688,6 +715,10 @@ svg {
 
   .game-floor-design {
     width: 20%;
+  }
+
+  .discard-user {
+    left: 75%;
   }
 }
 

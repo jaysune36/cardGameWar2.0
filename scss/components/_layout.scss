@@ -13,12 +13,7 @@
 }
 
 .main {
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px;
+  @include centerPage;
 }
 
 .game-name {
@@ -38,7 +33,7 @@
     padding: .5em;
     width: 100%;
     margin: 1em 0;
-    background-color: #386587;
+    background-color: $game-board-color-offset;
   }
 
   & li:hover {
@@ -55,7 +50,7 @@
   & button {
     width: 10em;
     font-size: 2em;
-    background-color: #386587;
+    background-color: $game-board-color-offset;
     border-style: none;
     border-radius: 5px;
   }
@@ -89,7 +84,7 @@
     border-radius: 5px;
     width: 50%;
     font-size: 1.5em;
-    background-color: #386587;
+    background-color: $game-board-color-offset;
     &:hover {
     cursor: pointer;
     opacity: .5;
@@ -101,26 +96,17 @@
 
 .game-board {
   @include center;
+  @include centerPage;
   padding-top: 2em;
   height: 90vh;
   width: 90%;
-
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px;
 }
 
 .game-floor {
+  @include centerPage;
   display: none;
   width: 40%;
   height: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 10px;
   & .game-floor-mid{
     width: 100%;
   }
@@ -128,7 +114,7 @@
 
 .user {
   @include center;
-  width: 80%;
+  width: 70%;
   height: 15%;
   overflow-y: hidden;
   overflow-x: scroll;
@@ -157,6 +143,12 @@
   }
 }
 
+.discard-user {
+  position: fixed;
+  z-index: 10;
+  left: 85%;
+}
+
 .hearts-card {
   background-image: url('../../svgs/heart.svg');
 }
@@ -180,7 +172,7 @@
 .cpu-card {
   padding-top: .5em;
   border: 1px solid black;
-  background-color: #386587;
+  background-color: $game-board-color-offset;
   border-radius: 5px;
   width: 50px;
   height: 80px;
@@ -189,6 +181,14 @@
   &:hover {
     cursor: pointer;
   }
+}
+
+// .discard {
+//   font-size: 1.2em;
+// }
+
+.mid-card {
+  margin: 0;
 }
 
 .overlay {

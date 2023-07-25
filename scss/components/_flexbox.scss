@@ -64,19 +64,28 @@
   align-items: center;
 }
 
-// .game-floor-design {
-//   display: flex;
-//   align-items: center;
-// }
-
 .game-floor-mid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
+.cpu {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .cpu-mid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  & .cpu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 50px;
+  }
 }
