@@ -248,17 +248,25 @@ class Game {
       this.tiedPlayers = [];
       this.gameFloorCards = [];
     }
-    console.log(player)
   }
 
   tieBreaker(cardIndex) {
     let heightestValue = 0;
     let player;
-
+    console.log(this.tiedPlayers)
     // if (this.userTied) {
       for (let i = 0; i < this.tiedPlayers.length; i++) {
         if (this.tiedPlayers[i].name.includes('CPU')) {
           this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
+
+          if (this.tiedPlayers[i].hand[0].value > heightestValue) {
+            heightestValue = this.tiedPlayers[i].hand[0].value;
+            player = this.tiedPlayers[i]
+          } else if (this.tiedPlayers[i].hand[0].value < heightestValue) {
+            this.tiedPlayers.splice(i,1);
+          }
+
+
           this.tiedPlayers[i].hand.splice(0, 1);
 
           for (let j = 0; j < 3; j++) {
@@ -266,27 +274,23 @@ class Game {
             this.tiedPlayers[i].hand.splice(0, 1);
           }
 
-          if (this.tiedPlayers[i].hand[0].value > heightestValue) {
-            heightestValue = this.tiedPlayers[i].hand[0].value;
-            player = this.tiedPlayers[i]
-          }
-
         } else {
           this.gameFloorCards.push(this.tiedPlayers[i].hand[cardIndex]);
+
+          if (this.tiedPlayers[i].hand[cardIndex].value > heightestValue) {
+            heightestValue = this.tiedPlayers[i].hand[cardIndex];
+            player = this.tiedPlayers[i]
+          } else if (this.tiedPlayers[i].hand[cardIndex].value < heightestValue) {
+            this.tiedPlayers.splice(i,1);
+          }
+
+
           this.tiedPlayers[i].hand.splice(cardIndex, 1);
 
           for (let j = 0; j < 3; j++) {
             this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
-            this.tiedPlayers[i].hand.splice(0, 1);
+            this.tiedPlayers[i].hand.splice(cardIndex, 1);
           }
-
-          if (this.tiedPlayers[i].hand[cardIndex] > heightestValue) {
-            heightestValue = this.tiedPlayers[i].hand[cardIndex];
-            player = this.tiedPlayers[i]
-          } 
-          // else if(this.tiedPlayers[i].hand[cardIndex] < heightestValue) {
-
-          // }
         }
       }
     // } else {
@@ -306,7 +310,7 @@ class Game {
     // }
 
     console.log(player);
-    console.log(this.tiedPlayers.length)
+    console.log(this.tiedPlayers)
 
     for (let l = 0; l < this.gameFloorCards.length; l++) {
       player.addCardsWon(this.gameFloorCards[l]);
@@ -318,7 +322,7 @@ class Game {
       this.tiedGame = false;
     }
 
-    console.log(this.players);
+    // console.log(this.players);
   }
 
   // the replayGame method will prompt who the winner of the game was and then return the user back to the main menu.
