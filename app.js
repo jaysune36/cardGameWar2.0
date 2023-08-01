@@ -10,6 +10,7 @@ const gameBoard = document.querySelector('.game-board');
 const userHand = document.querySelector('.user');
 const gameFloor = document.querySelector('.game-floor');
 const gameFloorDesgin = document.querySelector('.game-floor-svgs');
+const winAnounce = document.querySelector('.win-anounce')
 let cpuPlayers = 0;
 let cpuHand = 0;
 
@@ -248,6 +249,9 @@ class Game {
       this.tiedPlayers = [];
       this.gameFloorCards = [];
     }
+
+    return player[playerIndex].name;
+
   }
 
   tieBreaker(cardIndex) {
@@ -257,6 +261,7 @@ class Game {
     // if (this.userTied) {
       for (let i = 0; i < this.tiedPlayers.length; i++) {
         if (this.tiedPlayers[i].name.includes('CPU')) {
+
           this.gameFloorCards.push(this.tiedPlayers[i].hand[0]);
 
           if (this.tiedPlayers[i].hand[0].value > heightestValue) {
@@ -265,7 +270,6 @@ class Game {
           } else if (this.tiedPlayers[i].hand[0].value < heightestValue) {
             this.tiedPlayers.splice(i,1);
           }
-
 
           this.tiedPlayers[i].hand.splice(0, 1);
 
@@ -283,7 +287,6 @@ class Game {
           } else if (this.tiedPlayers[i].hand[cardIndex].value < heightestValue) {
             this.tiedPlayers.splice(i,1);
           }
-
 
           this.tiedPlayers[i].hand.splice(cardIndex, 1);
 
@@ -416,6 +419,7 @@ gameBoard.addEventListener('click', (e) => {
     let indexLI = document.querySelector('.user').getElementsByTagName(`li`);
     let xtraCPU = '';
     let user = document.querySelector('.user');
+    let activeUserIndex = e.target.parentElement.getAttribute('index');
     gameFloor.innerHTML = `
       <div class='${e.target.className} game-floor-user'>${e.target.innerText}</div>
       <div class='card ${game.players[1].hand[0].suit}-card'>${game.players[1].hand[0].cardType}</div>
@@ -438,7 +442,6 @@ gameBoard.addEventListener('click', (e) => {
     addRemoveOverlay(indexLI, 'add');
 
     if (game.tiedGame === true) {
-      console.log('this is a tied game');
 
       game.tieBreaker(userCardIndex);
       updateCPUHand(user.nextElementSibling);
@@ -457,25 +460,47 @@ gameBoard.addEventListener('click', (e) => {
         document.querySelector('.discard-user').innerText = discardCountUser;
       }, 1500);
     } else {
-      game.gameBoard(userIndex, userCardIndex);
       updateCPUHand(user.nextElementSibling);
-      let discardCountUser = game.players[0].cardsWon.length;
       let cpusDiscard = document.querySelectorAll('.discard');
+      winAnounce.style.display = 'block';
+      let winStr = game.gameBoard(userIndex, userCardIndex);
+
+      if(game.tiedGame === true) {
+        winAnounce.innerText = `Players Tied`;
+      } else {
+        winAnounce.innerText = `Player ${winStr} wins`;
+      }
       setTimeout(() => {
         gameFloor.innerHTML = '';
         removeCardUserHand(game.players, userIndex, userCardIndex);
-        for (let player of game.players) {
-          if (player.hand.length === 0) {
-            for (let j = 0; j < player.hand.length; j++) {
-              player.addCardsWon();
-            }
-          }
-        }
         e.target.remove();
         addRemoveOverlay(indexLI, 'remove');
         for (let cpuDiscard of cpusDiscard) {
+          for(let i=0;i<game.players.length;i++) {
+            if(game.players[i].name.includes('CPU') && game.players[i].hand <= 4) {
+              game.players[i].cardsWonToHand();
+              updateCPUHand(user.nextElementSibling);
+              game.players[i].cardsWon = [];
+            }
+          }
           cpuDiscard.innerText = game.players[cpuDiscard.previousElementSibling.getAttribute('index')].cardsWon.length
         }
+        winAnounce.style.display = 'none';
+
+        if(user.getElementsByTagName('li').length <= 4) {
+          game.players[activeUserIndex].cardsWonToHand();
+          let addedCardsStr = '';
+          for(let i=0;i<game.players[activeUserIndex].cardsWon.length;i++) {
+            addedCardsStr += ` 
+            <li class="card ${game.players[activeUserIndex].cardsWon[i].suit}-card" index='${i + parseFloat(user.getElementsByTagName('li').length)}'>
+            <div></div>
+            ${game.players[activeUserIndex].cardsWon[i].cardType}
+            </li>`
+          }
+          user.innerHTML += addedCardsStr;
+          game.players[activeUserIndex].cardsWon = [];
+        }
+        let discardCountUser = game.players[activeUserIndex].cardsWon.length;
         document.querySelector('.discard-user').innerText = discardCountUser;
 
       }, 2000);
